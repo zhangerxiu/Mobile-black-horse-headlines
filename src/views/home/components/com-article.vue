@@ -17,10 +17,46 @@
               title：设置单元格标题
       -->
       <!-- <van-cell v-for="item in list" :key="item" :title="item"/> -->
-      <van-cell
-          v-for="item in articleList"
-          :key="item.art_id.toString()"
-          :title="item.title"/>
+      <!--
+cell单元格组件
+title：单元格标题
+<template slot="label">通过作用域插槽体现单元格的“label描述信息”
+slot="label/title/"
+-->
+<van-cell v-for="item in articleList" :key="item.art_id.toString()" :title="item.title">
+  <!--命名插槽：体现label的描述信息-->
+  <template slot="label">
+    <!-- grid宫格组件，一行中通过“列”的方式设置许多单元格
+    van-grid
+    border:设置宫格是否有边框
+    :column-num：宫格列的数目
+    van-grid-item：宫格单元
+    内容区域，设置具体显示内容
+    van-image：显示图片的组件
+    width:宽度
+    height高度
+    src图片路径名地址
+    -->
+        <!-- 数据部分
+    通过cover.type  cover.images进行封面图片展示
+    v-if:宫格是否有机会体现 type>0
+    column-num:type  1列  3列
+    -->
+    <van-grid :border="false" v-if="item.cover.type>0" :column-num="item.cover.type">
+      <van-grid-item v-for="(item2,k2) in item.cover.images" :key="k2">
+        <van-image width="90" height="90" :src="item2"/>
+      </van-grid-item>
+    </van-grid>
+    <p>
+      <span>作者:{{item.aut_name}}</span>
+      &nbsp;
+      <span>评论 :{{item.comm_count}}</span>
+      &nbsp;
+      <span>时间:{{item.pubdate}}</span>
+      &nbsp;
+    </p>
+  </template>
+</van-cell>
     </van-list>
      </van-pull-refresh>
   </div>
@@ -78,6 +114,10 @@ export default {
     // 上拉瀑布流加载执行的方法
     // 瀑布流加载执行的方法
     async onLoad () {
+      // 应用延迟器，使得执行速度减慢
+      // await设置上，作用就是当前的延迟器没有执行完毕，后续代码都等着
+      //              即 异步调用变为同步执行
+      await this.$sleep(800) // 该延迟器要执行0.8秒
       // 1. 获得文章列表数据
       //    注意：设置await，使得当前的axios异步进程变为同步的，先执行完，再执行后续代码
       const articles = await this.getArticleList()
