@@ -15,9 +15,17 @@ import '@/assets/css/global.less'
 // 对vee-validate校验规则到导入
 import '@/utils/validate.js'
 
+import * as filters from '@/utils/filters' // 注册时间过滤器，用于文章的发布时间
+
+// 注册全局过滤器
+Object.keys(filters).forEach(item => {
+  Vue.filter(item, filters[item])
+})
+
 Vue.use(Vant)// 注册，一次性把全部的应用组件都注册好，插件机制
 
 Vue.use(Lazyload) // 注册懒加载指令
+
 // 创建一个延迟器，
 // 给Vue增加继承成员，名称$sleep，也可以自定义为其他
 Vue.prototype.$sleep = time => {

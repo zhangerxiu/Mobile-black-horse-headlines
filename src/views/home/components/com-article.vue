@@ -48,25 +48,38 @@ slot="label/title/"
       </van-grid-item>
     </van-grid>
     <p>
+      <!--给 van-cell  的右侧设置叉号按钮
+                van-icon:图标组件
+                name：图标样式
+              -->
+       <van-icon name="close" style="float:right;" @click="displayDialog()"/>
       <span>作者:{{item.aut_name}}</span>
       &nbsp;
       <span>评论 :{{item.comm_count}}</span>
       &nbsp;
-      <span>时间:{{item.pubdate}}</span>
+      <span>时间:{{item.pubdate |formatTime}}</span>
       &nbsp;
     </p>
   </template>
 </van-cell>
     </van-list>
      </van-pull-refresh>
+     <!-- 更多操作组件位置(举报、不感兴趣弹出框) -->
+    <more-action v-model="showDialog"></more-action>
   </div>
 </template>
 
 <script>
+// 对com-moreaction.vue弹出框组件做 导入、注册、使用
+import MoreAction from './com-moreaction.vue'
+
 // 导入获得文章的api函数
 import { apiArticleList } from '@/api/article.js'
 export default {
   name: 'com-article',
+  components: {
+    MoreAction
+  },
   props: {
   // 当前选中的频道id信息
     channelID: {
@@ -76,6 +89,7 @@ export default {
   },
   data () {
     return {
+      showDialog: false, // 控制子组件弹出框是否显示
       // 文章列表
       articleList: [],
       ts: Date.now(), // 时间戳参数，用于分页获取文章信息
@@ -93,6 +107,11 @@ export default {
     this.getArticleList()
   },
   methods: {
+    // 展示更多操作的弹层
+    displayDialog () {
+      this.showDialog = true
+    },
+
     // 获得文章列表
     async getArticleList () {
       const result = await apiArticleList({ channel_id: this.channelID, timestamp: this.ts })
